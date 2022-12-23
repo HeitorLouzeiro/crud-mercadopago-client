@@ -82,3 +82,42 @@ def checkoutpro(request):
         checkout_url = preference_response['response']['init_point']
 
         return redirect(checkout_url)
+
+
+def checkoutproseveralproducts(request):
+    if request.method == 'GET':
+        products = Payment.objects.all()
+        context = {
+            'products': products
+        }
+        return render(request, 'payments/pages/checkoutpro.html', context)
+
+    if request.method == 'POST':
+        orders = Payment.objects.all()
+        # Criar um dicionário com as informações de pagamento
+        payment_data = {
+            'items': [],
+            'payer': {
+                'name': 'João da Silva',
+                'email': 'joao@example.com'
+            }
+        }
+
+        # Adicionar os produtos à lista de items
+        for order in orders:
+            item = {
+                'title': order.description,
+                'quantity': 1,
+                'currency_id': order.currency,
+                'unit_price':  float(order.value)
+            }
+            print(item)
+            payment_data['items'].append(item)
+
+    # Criar a preferência de pagamento
+    preference_response = sdk.preference().create(payment_data)
+
+    # Obter o link para o Checkout Pro
+    checkout_url = preference_response['response']['init_point']
+
+    return redirect(checkout_url)
