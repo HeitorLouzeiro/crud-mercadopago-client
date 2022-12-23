@@ -1,6 +1,8 @@
 import mercadopago
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+
+from .models import Payment
 
 # Create your views here.
 sdk = mercadopago.SDK(settings.ACCESS_TOKEN)
@@ -47,23 +49,36 @@ def update(request):
     return render(request, 'payments/pages/home.html')
 
 
-def payment(request):
-    payment_data = {
-        "transaction_amount": 100,
-        "token": 'ff8080814c11e237014c1ff593b57b4d',
-        "installments": 1,
-        "payer": {
-            "type": "customer",
-            "id": "1271610551-ptywVIJWkv7G8l"
-        }
-    }
-
-    payment_response = sdk.payment().create(payment_data)
-    payment = payment_response["response"]
-    print(payment)
-    return render(request, 'payments/pages/home.html')
-
-
 def checkoutpro(request):
-    # Cria um item na preferência
-    return render(request, 'payments/pages/checkoutpro.html')
+    if request.method == 'GET':
+        products = Payment.objects.all().filter(pk=1)
+        context = {
+            'products': products
+        }
+        return render(request, 'payments/pages/checkoutpro.html', context)
+
+    if request.method == 'POST':
+        # Obter o pedido do banco de dados
+        order = Payment.objects.get(pk=1)
+
+        # Criar um dicionário com as informações de pagamento
+        payment_data = {
+            'items': [{
+                'title': order.description,
+                'quantity': 1,
+                'currency_id': order.currency,
+                'unit_price':  float(order.value)
+            }],
+            'payer': {
+                'name': 'João da Silva',
+                'email': 'joao@example.com'
+            }
+        }
+
+        # Criar a preferência de pagamento
+        preference_response = sdk.preference().create(payment_data)
+
+        # Obter o link para o Checkout Pro
+        checkout_url = preference_response['response']['init_point']
+
+        return redirect(checkout_url)

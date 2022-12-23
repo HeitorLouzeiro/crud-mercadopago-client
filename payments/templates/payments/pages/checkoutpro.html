@@ -1,0 +1,11 @@
+<form action="{% url 'checkoutpro' %}" method="post">
+    {% csrf_token %}
+    {% for product  in products %}
+        <p>{{product.value}}</p>
+        <p>{{product.currency}}</p>
+        <p>{{product.description}}</p>
+    {% endfor %}
+    <button>
+        Pagar
+    </button>
+</form>
