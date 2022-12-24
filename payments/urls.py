@@ -3,7 +3,12 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.checkoutproselectedproducts,
+    path('', views.checkoutproselectedproductssession,
+         name='checkoutproselectedproductssession'),
+    path('addtocart', views.addtocart, name='addtocart'),
+    path('removecart/', views.removecart, name='removecart'),
+    path('success/', views.success, name='success'),
+    path('checkoutpro/v3', views.checkoutproselectedproducts,
          name='checkoutproselectedproducts'),
     path('checkoutpro/v2', views.checkoutproseveralproducts,
          name='checkoutproseveralproducts'),

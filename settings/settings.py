@@ -128,3 +128,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # mercadopago
 PUBLIC_KEY = os.environ.get('PUBLIC_KEY')
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
+
+# sessao do django
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 7 dias
+
+# salvar a cada request
+SESSION_SAVE_EVERY_REQUEST = False
